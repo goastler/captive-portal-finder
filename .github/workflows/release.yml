@@ -20,6 +20,7 @@ jobs:
             artifact_suffix: linux-x86_64
             runner: ubuntu-latest
             use_cross: true
+            package: true
           - target: x86_64-unknown-linux-musl
             artifact_suffix: linux-x86_64-musl
             runner: ubuntu-latest
@@ -28,6 +29,7 @@ jobs:
             artifact_suffix: linux-x86
             runner: ubuntu-latest
             use_cross: true
+            package: true
           - target: i686-unknown-linux-musl
             artifact_suffix: linux-x86-musl
             runner: ubuntu-latest
@@ -36,6 +38,7 @@ jobs:
             artifact_suffix: linux-aarch64
             runner: ubuntu-latest
             use_cross: true
+            package: true
           - target: aarch64-unknown-linux-musl
             artifact_suffix: linux-aarch64-musl
             runner: ubuntu-latest
@@ -44,6 +47,7 @@ jobs:
             artifact_suffix: linux-armv7
             runner: ubuntu-latest
             use_cross: true
+            package: true
           - target: armv7-unknown-linux-musleabihf
             artifact_suffix: linux-armv7-musl
             runner: ubuntu-latest
@@ -124,11 +128,45 @@ jobs:
         run: |
           cp "target/${TARGET}/release/${BINARY_NAME}" "${BINARY_NAME}-${SUFFIX}"
 
-      - name: Upload artifact
+      - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.BINARY_NAME }}-${{ matrix.artifact_suffix }}
           path: ${{ env.BINARY_NAME }}-${{ matrix.artifact_suffix }}
+          retention-days: 1
+
+      - name: Install packaging tools
+        if: matrix.package
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deb,cargo-generate-rpm
+
+      - name: Build .deb
+        if: matrix.package
+        env:
+          TARGET: ${{ matrix.target }}
+        run: cargo deb --no-build --no-strip --target "$TARGET"
+
+      - name: Upload .deb artifact
+        if: matrix.package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ matrix.artifact_suffix }}-deb
+          path: target/${{ matrix.target }}/debian/*.deb
+          retention-days: 1
+
+      - name: Build .rpm
+        if: matrix.package
+        env:
+          TARGET: ${{ matrix.target }}
+        run: cargo generate-rpm --target "$TARGET"
+
+      - name: Upload .rpm artifact
+        if: matrix.package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ matrix.artifact_suffix }}-rpm
+          path: target/${{ matrix.target }}/generate-rpm/*.rpm
           retention-days: 1
 
   publish:
@@ -168,6 +206,47 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
+
+      - name: Generate PKGBUILD
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#v}"
+          URL="https://github.com/goastler/captive-portal-finder/archive/refs/tags/${TAG}.tar.gz"
+          SHA256=$(curl -sL "$URL" | sha256sum | cut -d' ' -f1)
+          cat > artifacts/PKGBUILD << EOF
+          # Maintainer: George Oastler <goastler4@gmail.com>
+          pkgname=portalgun
+          pkgver=${VERSION}
+          pkgrel=1
+          pkgdesc='Detect captive portal URLs on a Linux network'
+          arch=('x86_64' 'aarch64' 'armv7h' 'i686')
+          url='https://github.com/goastler/captive-portal-finder'
+          license=('MIT')
+          makedepends=('cargo')
+          source=("\$pkgname-\$pkgver.tar.gz::https://github.com/goastler/captive-portal-finder/archive/refs/tags/v${VERSION}.tar.gz")
+          sha256sums=('${SHA256}')
+
+          prepare() {
+              cd "\$pkgname-\$pkgver"
+              cargo fetch --locked --target "\$CARCH-unknown-linux-gnu"
+          }
+
+          build() {
+              cd "\$pkgname-\$pkgver"
+              cargo build --frozen --release
+          }
+
+          check() {
+              cd "\$pkgname-\$pkgver"
+              cargo test --frozen
+          }
+
+          package() {
+              cd "\$pkgname-\$pkgver"
+              install -Dm0755 -t "\$pkgdir/usr/bin/" "target/release/portalgun"
+          }
+          EOF
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

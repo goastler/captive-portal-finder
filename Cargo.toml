@@ -10,6 +10,9 @@ license = "MIT"
 name = "portalgun"
 path = "src/main.rs"
 
+[package.metadata.deb]
+section = "net"
+
 [dependencies]
 tokio   = { version = "1",    features = ["full"] }
 reqwest = { version = "0.12", features = ["rustls-tls"], default-features = false }
