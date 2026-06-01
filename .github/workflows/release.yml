@@ -12,24 +12,78 @@ env:
 jobs:
   build:
     name: Build ${{ matrix.target }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            artifact_suffix: x86_64-linux-gnu
+            artifact_suffix: linux-x86_64
+            runner: ubuntu-latest
+            use_cross: true
           - target: x86_64-unknown-linux-musl
-            artifact_suffix: x86_64-linux-musl
+            artifact_suffix: linux-x86_64-musl
+            runner: ubuntu-latest
+            use_cross: true
           - target: i686-unknown-linux-gnu
-            artifact_suffix: i686-linux-gnu
+            artifact_suffix: linux-x86
+            runner: ubuntu-latest
+            use_cross: true
+          - target: i686-unknown-linux-musl
+            artifact_suffix: linux-x86-musl
+            runner: ubuntu-latest
+            use_cross: true
           - target: aarch64-unknown-linux-gnu
-            artifact_suffix: aarch64-linux-gnu
+            artifact_suffix: linux-aarch64
+            runner: ubuntu-latest
+            use_cross: true
           - target: aarch64-unknown-linux-musl
-            artifact_suffix: aarch64-linux-musl
+            artifact_suffix: linux-aarch64-musl
+            runner: ubuntu-latest
+            use_cross: true
           - target: armv7-unknown-linux-gnueabihf
-            artifact_suffix: armv7-linux-gnueabihf
+            artifact_suffix: linux-armv7
+            runner: ubuntu-latest
+            use_cross: true
+          - target: armv7-unknown-linux-musleabihf
+            artifact_suffix: linux-armv7-musl
+            runner: ubuntu-latest
+            use_cross: true
           - target: arm-unknown-linux-gnueabihf
-            artifact_suffix: arm-linux-gnueabihf
+            artifact_suffix: linux-armv6-hf
+            runner: ubuntu-latest
+            use_cross: true
+          - target: arm-unknown-linux-musleabihf
+            artifact_suffix: linux-armv6-musl
+            runner: ubuntu-latest
+            use_cross: true
+          - target: arm-unknown-linux-gnueabi
+            artifact_suffix: linux-armv6
+            runner: ubuntu-latest
+            use_cross: true
+          - target: armv5te-unknown-linux-gnueabi
+            artifact_suffix: linux-armv5
+            runner: ubuntu-latest
+            use_cross: true
+          - target: riscv64gc-unknown-linux-gnu
+            artifact_suffix: linux-riscv64
+            runner: ubuntu-latest
+            use_cross: true
+          - target: mipsel-unknown-linux-gnu
+            artifact_suffix: linux-mipsel
+            runner: ubuntu-latest
+            use_cross: true
+          - target: mips-unknown-linux-gnu
+            artifact_suffix: linux-mips
+            runner: ubuntu-latest
+            use_cross: true
+          - target: x86_64-apple-darwin
+            artifact_suffix: macos-x86_64
+            runner: macos-latest
+            use_cross: false
+          - target: aarch64-apple-darwin
+            artifact_suffix: macos-aarch64
+            runner: macos-latest
+            use_cross: false
 
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +94,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Install cross
+        if: matrix.use_cross
         uses: taiki-e/install-action@v2
         with:
           tool: cross
@@ -55,7 +110,12 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.target }}-cargo-
 
       - name: Build
-        run: cross build --release --locked --target ${{ matrix.target }}
+        run: |
+          if [ "${{ matrix.use_cross }}" = "true" ]; then
+            cross build --release --locked --target ${{ matrix.target }}
+          else
+            cargo build --release --locked --target ${{ matrix.target }}
+          fi
 
       - name: Rename binary
         env:
