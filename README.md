@@ -97,19 +97,54 @@ This detects your package manager (`apt`, `dnf`, `pacman`, `zypper`, `apk`) and 
 
 ## Install
 
-**AUR (Arch Linux)**
+**AUR (Arch Linux)** — pre-built binary, no compile step
 ```
 paru -S snortal-bin
 ```
 
-**crates.io**
+**Debian / Ubuntu** — download the `.deb` for your architecture:
+```
+# x86_64
+curl -LO https://github.com/goastler/snortal/releases/latest/download/snortal_latest_amd64.deb
+sudo dpkg -i snortal_latest_amd64.deb
+```
+Available `.deb` architectures: `amd64` (x86\_64), `arm64` (aarch64), `armhf` (armv7), `i386` (i686).
+
+**RPM (Fedora / RHEL / openSUSE)** — download the `.rpm` for your architecture:
+```
+sudo rpm -i https://github.com/goastler/snortal/releases/latest/download/snortal-latest-1.x86_64.rpm
+```
+Available `.rpm` architectures: `x86_64`, `aarch64`, `armv7`, `i686`.
+
+**Binary download (any Linux / macOS)**
+
+Pick your platform from the [releases page](https://github.com/goastler/snortal/releases/latest):
+
+| File | Platform |
+|---|---|
+| `snortal-linux-x86_64` | Linux x86\_64 (glibc) |
+| `snortal-linux-x86_64-musl` | Linux x86\_64 (musl / Alpine) |
+| `snortal-linux-aarch64` | Linux arm64 (glibc) |
+| `snortal-linux-aarch64-musl` | Linux arm64 (musl) |
+| `snortal-linux-armv7` | Linux ARMv7 (glibc) |
+| `snortal-linux-armv7-musl` | Linux ARMv7 (musl) |
+| `snortal-linux-armv6-hf` | Linux ARMv6 hard-float |
+| `snortal-linux-armv5` | Linux ARMv5 |
+| `snortal-linux-riscv64` | Linux RISC-V 64 |
+| `snortal-linux-x86` | Linux i686 (glibc) |
+| `snortal-macos-aarch64` | macOS Apple Silicon |
+| `snortal-macos-x86_64` | macOS Intel |
+
+```
+curl -Lo snortal https://github.com/goastler/snortal/releases/latest/download/snortal-linux-x86_64
+chmod +x snortal
+sudo mv snortal /usr/local/bin/
+```
+
+**crates.io** — builds from source
 ```
 cargo install snortal
 ```
-
-**Binary download**
-
-Pre-built binaries for Linux (x86\_64, aarch64, armv7, i686, musl, MIPS, RISC-V) and macOS are on the [releases page](https://github.com/goastler/snortal/releases).
 
 ## Building from source
 
