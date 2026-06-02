@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: 0BSD
 
 pkgname=snortal
-pkgver=1.0.1
+pkgver=1.0.2
 pkgrel=1
 pkgdesc='Detect captive portal URLs on a Linux network'
 arch=('x86_64' 'aarch64' 'armv7h' 'i686')
