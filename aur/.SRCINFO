@@ -1,4 +1,4 @@
-pkgbase = portalgun
+pkgbase = snortal
 	pkgdesc = Detect captive portal URLs on a Linux network
 	pkgver = 1.0.1
 	pkgrel = 1
@@ -9,7 +9,7 @@ pkgbase = portalgun
 	arch = i686
 	license = AGPL-3.0-or-later
 	makedepends = cargo
-	source = portalgun-1.0.1.tar.gz::https://github.com/goastler/captive-portal-finder/archive/refs/tags/v1.0.1.tar.gz
+	source = snortal-1.0.1.tar.gz::https://github.com/goastler/captive-portal-finder/archive/refs/tags/v1.0.1.tar.gz
 	sha256sums = SKIP
 
-pkgname = portalgun
+pkgname = snortal

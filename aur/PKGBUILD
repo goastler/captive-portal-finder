@@ -1,7 +1,7 @@
 # Maintainer: George Oastler <goastler4 at gmail dot com>
 # SPDX-License-Identifier: 0BSD
 
-pkgname=portalgun
+pkgname=snortal
 pkgver=1.0.1
 pkgrel=1
 pkgdesc='Detect captive portal URLs on a Linux network'

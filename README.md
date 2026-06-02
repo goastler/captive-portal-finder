@@ -1,4 +1,4 @@
-# portalgun
+# snortal
 
 Detects captive portal login page URLs on a Linux network.
 
@@ -8,16 +8,16 @@ When connecting to a WiFi network with a captive portal, the browser redirect of
 
 ```
 # Detect captive portal URLs on the current network
-portalgun
+snortal
 
 # Show verbose output (includes SSID, detectors with no results)
-portalgun --verbose
+snortal --verbose
 
 # Output as JSON
-portalgun --json
+snortal --json
 
 # Install optional system dependencies ahead of time
-portalgun install-deps
+snortal install-deps
 ```
 
 ## Overrides
@@ -29,7 +29,7 @@ The built-in defaults for each detector can be overridden via flags. When an ove
 Replace the 6 built-in connectivity-check URLs with your own:
 
 ```
-portalgun -e http://captive.apple.com/ -e http://connectivity-check.ubuntu.com./
+snortal -e http://captive.apple.com/ -e http://connectivity-check.ubuntu.com./
 ```
 
 Built-in defaults:
@@ -45,7 +45,7 @@ Built-in defaults:
 Check specific lease files instead of the built-in paths:
 
 ```
-portalgun -d /var/lib/dhcp/dhclient.leases -d /custom/path/leases
+snortal -d /var/lib/dhcp/dhclient.leases -d /custom/path/leases
 ```
 
 Built-in defaults (tried in order):
@@ -59,7 +59,7 @@ Built-in defaults (tried in order):
 Skip `/proc/net/route` auto-detection and probe a specific gateway directly:
 
 ```
-portalgun --gateway-ip 192.168.0.1
+snortal --gateway-ip 192.168.0.1
 ```
 
 Useful when the default route lookup fails or you know the portal is hosted on a non-default-gateway IP.
@@ -90,18 +90,35 @@ The tool works without any additional packages. Two optional system binaries add
 To install them:
 
 ```
-portalgun install-deps
+snortal install-deps
 ```
 
 This detects your package manager (`apt`, `dnf`, `pacman`, `zypper`, `apk`) and runs the appropriate install command with `sudo`. Missing binaries are skipped.
+
+## Install
+
+**AUR (Arch Linux)**
+```
+paru -S snortal
+```
+
+**crates.io**
+```
+cargo install snortal
+```
+
+**Binary download**
+
+Pre-built binaries for Linux (x86\_64, aarch64, armv7, i686, musl, MIPS, RISC-V) and macOS are on the [releases page](https://github.com/goastler/captive-portal-finder/releases).
 
 ## Building from source
 
 ```
 cargo build --release
+cargo install --path .
 ```
 
-The binary is at `target/release/portalgun`. No runtime dependencies beyond libc — `reqwest` with `rustls-tls` is statically compiled in.
+No runtime dependencies beyond libc — `reqwest` with `rustls-tls` is statically compiled in.
 
 ## Example output
 

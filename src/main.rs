@@ -5,8 +5,17 @@ mod types;
 
 #[derive(clap::Parser, Debug)]
 #[command(
-    name = "portalgun",
+    name = "snortal",
     about = "Detect captive portal URLs on the current Linux network",
+    after_help = "\
+Examples:
+  snortal                                    Run all detectors with defaults
+  snortal --verbose                          Include SSID and empty detectors
+  snortal --json                             Machine-readable output
+  snortal --timeout 10                       Raise HTTP/subprocess timeout
+  snortal -e http://captive.apple.com/       Use a custom probe endpoint
+  snortal --gateway-ip 192.168.0.1           Skip route auto-detection
+  snortal install-deps                       Install nmcli and wpa_cli",
     version
 )]
 struct Cli {

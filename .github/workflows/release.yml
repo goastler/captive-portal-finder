@@ -7,7 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  BINARY_NAME: portalgun
+  BINARY_NAME: snortal
 
 jobs:
   build:
@@ -217,7 +217,7 @@ jobs:
           cat > artifacts/PKGBUILD << EOF
           # Maintainer: George Oastler <goastler4 at gmail dot com>
           # SPDX-License-Identifier: 0BSD
-          pkgname=portalgun
+          pkgname=snortal
           pkgver=${VERSION}
           pkgrel=1
           pkgdesc='Detect captive portal URLs on a Linux network'
@@ -251,7 +251,7 @@ jobs:
           }
           EOF
           cat > artifacts/.SRCINFO << EOF
-          pkgbase = portalgun
+          pkgbase = snortal
           	pkgdesc = Detect captive portal URLs on a Linux network
           	pkgver = ${VERSION}
           	pkgrel = 1
@@ -262,10 +262,10 @@ jobs:
           	arch = i686
           	license = AGPL-3.0-or-later
           	makedepends = cargo
-          	source = portalgun-${VERSION}.tar.gz::https://github.com/goastler/captive-portal-finder/archive/refs/tags/v${VERSION}.tar.gz
+          	source = snortal-${VERSION}.tar.gz::https://github.com/goastler/captive-portal-finder/archive/refs/tags/v${VERSION}.tar.gz
           	sha256sums = ${SHA256}
 
-          pkgname = portalgun
+          pkgname = snortal
           EOF
 
       - name: Create GitHub Release
@@ -300,13 +300,13 @@ jobs:
           SHA256=$(curl -sL "$URL" | sha256sum | cut -d' ' -f1)
 
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur -o StrictHostKeyChecking=yes"
-          git clone ssh://aur@aur.archlinux.org/portalgun.git aur-repo
+          git clone ssh://aur@aur.archlinux.org/snortal.git aur-repo
 
           sed "s/^pkgver=.*/pkgver=${VERSION}/; s/sha256sums=('SKIP')/sha256sums=('${SHA256}')/" \
             aur/PKGBUILD > aur-repo/PKGBUILD
 
           cat > aur-repo/.SRCINFO << SRCINFOEOF
-          pkgbase = portalgun
+          pkgbase = snortal
           	pkgdesc = Detect captive portal URLs on a Linux network
           	pkgver = ${VERSION}
           	pkgrel = 1
@@ -317,10 +317,10 @@ jobs:
           	arch = i686
           	license = AGPL-3.0-or-later
           	makedepends = cargo
-          	source = portalgun-${VERSION}.tar.gz::https://github.com/goastler/captive-portal-finder/archive/refs/tags/v${VERSION}.tar.gz
+          	source = snortal-${VERSION}.tar.gz::https://github.com/goastler/captive-portal-finder/archive/refs/tags/v${VERSION}.tar.gz
           	sha256sums = ${SHA256}
 
-          pkgname = portalgun
+          pkgname = snortal
           SRCINFOEOF
 
           cd aur-repo

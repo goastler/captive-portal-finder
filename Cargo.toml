@@ -1,5 +1,5 @@
 [package]
-name = "portalgun"
+name = "snortal"
 version = "1.0.1"
 edition = "2021"
 description = "Detect captive portal URLs on a Linux network"
@@ -7,7 +7,7 @@ authors = ["George Oastler <goastler4@gmail.com>"]
 license = "AGPL-3.0-or-later"
 
 [[bin]]
-name = "portalgun"
+name = "snortal"
 path = "src/main.rs"
 
 [package.metadata.deb]
