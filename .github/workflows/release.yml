@@ -334,23 +334,21 @@ PYEOF
           SHA_I686=$(curl    --max-time 120 -sL "${BASE}/snortal-linux-x86"     | sha256sum | cut -d' ' -f1)
 
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur -o StrictHostKeyChecking=yes"
-          git clone ssh://aur@aur.archlinux.org/snortal-bin.git aur-repo || {
+          git clone ssh://aur@aur.archlinux.org/snortal.git aur-repo || {
             git init aur-repo
-            git -C aur-repo remote add origin ssh://aur@aur.archlinux.org/snortal-bin.git
+            git -C aur-repo remote add origin ssh://aur@aur.archlinux.org/snortal.git
           }
 
           cat > aur-repo/PKGBUILD << EOF
 # Maintainer: George Oastler <goastler4 at gmail dot com>
 # SPDX-License-Identifier: 0BSD
-pkgname=snortal-bin
+pkgname=snortal
 pkgver=${VERSION}
 pkgrel=1
 pkgdesc='Detect captive portal URLs on a Linux network'
 arch=('x86_64' 'aarch64' 'armv7h' 'i686')
 url='https://github.com/goastler/snortal'
 license=('AGPL-3.0-or-later')
-provides=('snortal')
-conflicts=('snortal')
 source_x86_64=("snortal-x86_64-\${pkgver}::${BASE}/snortal-linux-x86_64")
 source_aarch64=("snortal-aarch64-\${pkgver}::${BASE}/snortal-linux-aarch64")
 source_armv7h=("snortal-armv7h-\${pkgver}::${BASE}/snortal-linux-armv7")
@@ -366,7 +364,7 @@ package() {
 EOF
 
           cat > aur-repo/.SRCINFO << EOF
-pkgbase = snortal-bin
+pkgbase = snortal
 	pkgdesc = Detect captive portal URLs on a Linux network
 	pkgver = ${VERSION}
 	pkgrel = 1
@@ -376,8 +374,6 @@ pkgbase = snortal-bin
 	arch = armv7h
 	arch = i686
 	license = AGPL-3.0-or-later
-	provides = snortal
-	conflicts = snortal
 	source_x86_64 = snortal-x86_64-${VERSION}::${BASE}/snortal-linux-x86_64
 	sha256sums_x86_64 = ${SHA_X86_64}
 	source_aarch64 = snortal-aarch64-${VERSION}::${BASE}/snortal-linux-aarch64
@@ -387,7 +383,7 @@ pkgbase = snortal-bin
 	source_i686 = snortal-i686-${VERSION}::${BASE}/snortal-linux-x86
 	sha256sums_i686 = ${SHA_I686}
 
-pkgname = snortal-bin
+pkgname = snortal
 EOF
 
           cd aur-repo
