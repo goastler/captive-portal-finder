@@ -110,11 +110,14 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.target }}-cargo-
 
       - name: Build
+        env:
+          USE_CROSS: ${{ matrix.use_cross }}
+          TARGET: ${{ matrix.target }}
         run: |
-          if [ "${{ matrix.use_cross }}" = "true" ]; then
-            cross build --release --locked --target ${{ matrix.target }}
+          if [ "$USE_CROSS" = "true" ]; then
+            cross build --release --locked --target "$TARGET"
           else
-            cargo build --release --locked --target ${{ matrix.target }}
+            cargo build --release --locked --target "$TARGET"
           fi
 
       - name: Rename binary
@@ -288,9 +291,31 @@ EOF
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo "$AUR_SSH_KEY" > ~/.ssh/aur
+          printf '%s' "$AUR_SSH_KEY" > ~/.ssh/aur
           chmod 600 ~/.ssh/aur
-          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts
+
+          # Fetch AUR host key and verify fingerprint before trusting
+          # Known SHA-1: D0B1 608D 9B75 24C9 7058 E91B 9C61 FDD9 CD01 2767
+          ssh-keyscan aur.archlinux.org > /tmp/aur_hostkey 2>/dev/null
+          python3 - << 'PYEOF'
+import subprocess, base64, binascii, sys
+EXPECTED = "d0b1608d9b7524c97058e91b9c61fdd9cd012767"
+out = subprocess.check_output(["ssh-keygen", "-E", "sha1", "-lf", "/tmp/aur_hostkey"]).decode()
+for line in out.splitlines():
+    parts = line.split()
+    if len(parts) >= 2 and "SHA1:" in parts[1]:
+        b64 = parts[1].split("SHA1:")[1]
+        padded = b64 + "=" * (-len(b64) % 4)
+        try:
+            if binascii.hexlify(base64.b64decode(padded)).decode() == EXPECTED:
+                sys.exit(0)
+        except Exception:
+            pass
+print("ERROR: AUR host key fingerprint mismatch", file=sys.stderr)
+sys.exit(1)
+PYEOF
+          ssh-keygen -H -f /tmp/aur_hostkey
+          cat /tmp/aur_hostkey >> ~/.ssh/known_hosts
 
       - name: Push to AUR
         env:
