@@ -307,10 +307,12 @@ jobs:
           VERSION="${TAG#v}"
           BASE="https://github.com/goastler/snortal/releases/download/${TAG}"
 
-          SHA_X86_64=$(curl --max-time 120 -sL "${BASE}/snortal-linux-x86_64"  | sha256sum | cut -d' ' -f1)
+          SHA_X86_64=$(curl --max-time 120 -sL "${BASE}/snortal-linux-x86_64"   | sha256sum | cut -d' ' -f1)
           SHA_AARCH64=$(curl --max-time 120 -sL "${BASE}/snortal-linux-aarch64" | sha256sum | cut -d' ' -f1)
           SHA_ARMV7H=$(curl  --max-time 120 -sL "${BASE}/snortal-linux-armv7"   | sha256sum | cut -d' ' -f1)
+          SHA_ARMV6H=$(curl  --max-time 120 -sL "${BASE}/snortal-linux-armv6-hf" | sha256sum | cut -d' ' -f1)
           SHA_I686=$(curl    --max-time 120 -sL "${BASE}/snortal-linux-x86"     | sha256sum | cut -d' ' -f1)
+          SHA_RISCV64=$(curl --max-time 120 -sL "${BASE}/snortal-linux-riscv64" | sha256sum | cut -d' ' -f1)
 
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur -o StrictHostKeyChecking=yes"
           git clone ssh://aur@aur.archlinux.org/snortal.git aur-repo || {
@@ -325,17 +327,21 @@ jobs:
           pkgver=${VERSION}
           pkgrel=1
           pkgdesc='Detect captive portal URLs on a Linux network'
-          arch=('x86_64' 'aarch64' 'armv7h' 'i686')
+          arch=('x86_64' 'aarch64' 'armv7h' 'armv6h' 'i686' 'riscv64')
           url='https://github.com/goastler/snortal'
           license=('AGPL-3.0-or-later')
           source_x86_64=("snortal-x86_64-\${pkgver}::${BASE}/snortal-linux-x86_64")
           source_aarch64=("snortal-aarch64-\${pkgver}::${BASE}/snortal-linux-aarch64")
           source_armv7h=("snortal-armv7h-\${pkgver}::${BASE}/snortal-linux-armv7")
+          source_armv6h=("snortal-armv6h-\${pkgver}::${BASE}/snortal-linux-armv6-hf")
           source_i686=("snortal-i686-\${pkgver}::${BASE}/snortal-linux-x86")
+          source_riscv64=("snortal-riscv64-\${pkgver}::${BASE}/snortal-linux-riscv64")
           sha256sums_x86_64=('${SHA_X86_64}')
           sha256sums_aarch64=('${SHA_AARCH64}')
           sha256sums_armv7h=('${SHA_ARMV7H}')
+          sha256sums_armv6h=('${SHA_ARMV6H}')
           sha256sums_i686=('${SHA_I686}')
+          sha256sums_riscv64=('${SHA_RISCV64}')
 
           package() {
               install -Dm0755 "snortal-\${CARCH}-\${pkgver}" "\$pkgdir/usr/bin/snortal"
@@ -351,7 +357,9 @@ jobs:
           	arch = x86_64
           	arch = aarch64
           	arch = armv7h
+          	arch = armv6h
           	arch = i686
+          	arch = riscv64
           	license = AGPL-3.0-or-later
           	source_x86_64 = snortal-x86_64-${VERSION}::${BASE}/snortal-linux-x86_64
           	sha256sums_x86_64 = ${SHA_X86_64}
@@ -359,8 +367,12 @@ jobs:
           	sha256sums_aarch64 = ${SHA_AARCH64}
           	source_armv7h = snortal-armv7h-${VERSION}::${BASE}/snortal-linux-armv7
           	sha256sums_armv7h = ${SHA_ARMV7H}
+          	source_armv6h = snortal-armv6h-${VERSION}::${BASE}/snortal-linux-armv6-hf
+          	sha256sums_armv6h = ${SHA_ARMV6H}
           	source_i686 = snortal-i686-${VERSION}::${BASE}/snortal-linux-x86
           	sha256sums_i686 = ${SHA_I686}
+          	source_riscv64 = snortal-riscv64-${VERSION}::${BASE}/snortal-linux-riscv64
+          	sha256sums_riscv64 = ${SHA_RISCV64}
 
           pkgname = snortal
           EOF
