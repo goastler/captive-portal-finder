@@ -99,7 +99,7 @@ This detects your package manager (`apt`, `dnf`, `pacman`, `zypper`, `apk`) and 
 
 **AUR (Arch Linux)**
 ```
-paru -S snortal
+paru -S snortal-bin
 ```
 
 **crates.io**
